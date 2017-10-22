@@ -12,7 +12,7 @@ function setup(){
   background(0)
 
   particleSys = new ParticleSystem()
-  particleSys.addParticles(80)
+  particleSys.addParticles(100)
 }
 
 function draw(){
@@ -38,9 +38,13 @@ ParticleSystem.prototype.addParticle = function () {
   if(((Math.random() * 2) - 1) >= 0.){
     x = Math.floor(Math.random() * canvasWidth)
     y = Math.floor(Math.random() * 2) * canvasHeight
+    if(y === 0) y = -30
+    else y+= 30
   } else {
     x = Math.floor(Math.random() * 2) * canvasWidth
     y = Math.floor(Math.random() * canvasHeight)
+    if(x === 0) x = -30
+    else x+= 30
   }
   //console.log("New particle " + x + " " + y)
   positionVect = createVector(x, y)
@@ -123,12 +127,13 @@ Particle.prototype.displayPart = function() {
 };
 Particle.prototype.updatePosition = function(){
   this.position.add(this.velocity)
+
 };
 Particle.prototype.isParticleOnCanvas = function (){
-  if(this.position.x >= canvasWidth || this.position.x <= 0){
+  if(this.position.x >= canvasWidth + 30 || this.position.x <= 0 - 30){
     return false;
   }
-  else if (this.position.y >= canvasHeight || this.position.y <= 0) {
+  else if (this.position.y >= canvasHeight + 30 || this.position.y <= 0 - 30) {
     return false;
   }
   return true;
