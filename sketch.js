@@ -12,14 +12,14 @@ function setup(){
   background(0)
 
   particleSys = new ParticleSystem()
-  particleSys.addParticles(13)
+  particleSys.addParticles(80)
 }
 
 function draw(){
   background(0)
   particleSys.run()
   particleSys.drawToEachOther()
-  //particleSys.drawToMouse(mouseX, mouseY)
+  //particleSys.drawToPoint(mouseX, mouseY)
   //console.log("Mouse " + mouseX + " " + mouseY)
 }
 
@@ -48,27 +48,45 @@ ParticleSystem.prototype.addParticle = function () {
   this.particles.push(new Particle(positionVect))
   //console.log("new particle")
 };
-ParticleSystem.prototype.drawToMouse = function(mousexpos, mouseypos){
-  stroke(255)
+ParticleSystem.prototype.drawToPoint = function(mousexpos, mouseypos){
+
   for (var i = 0; i <this.particles.length; i++) {
-    line( this.particles[i].position.x,
-          this.particles[i].position.y,
-          mousexpos,
-          mouseypos)
+    var xpos = this.particles[i].position.x
+    var ypos = this.particles[i].position.y
+
+    var distance = dist(xpos, ypos, mousexpos, mouseypos)
+    if(distance < 255){
+      stroke(255, 255, 255, 255 - distance)
+      line( xpos,
+            ypos,
+            mousexpos,
+            mouseypos)
+    }
   }
   noStroke()
 }
 //don't use it XD
 //clearly a mess
 ParticleSystem.prototype.drawToEachOther = function(){
-  stroke(255)
   for (var i = 0; i <this.particles.length; i++) {
     var ipart = this.particles[i]
+
+    var xpos = this.particles[i].position.x
+    var ypos = this.particles[i].position.y
+
+
     for (var j = 0; j < this.particles.length; j++) {
-      line( this.particles[j].position.x,
-          this.particles[j].position.y,
-          ipart.position.x,
-          ipart.position.y)
+      var xposInner = this.particles[j].position.x
+      var yposInner = this.particles[j].position.y
+
+      var distance = dist(xpos, ypos, xposInner, yposInner)
+      if(distance < 255){
+        stroke(255, 255, 255, 255 - distance)
+        line( xpos,
+              ypos,
+              xposInner,
+              yposInner)
+      }
     }
   }
   noStroke()
@@ -77,17 +95,23 @@ ParticleSystem.prototype.run = function(){
   for (var i = 0; i < this.particles.length; i++) {
     var p = this.particles[i]
     p.run()
+    //if(p.superiorParticle === true){
+    //  this.drawToPoint(p.position.x, p.position.y)
+    //}
     if(p.isParticleOnCanvas() != true){
-      //this.particles.splice(i, 1)
-      //this.addParticle()
-      p.bounce() // made the particle bounce from the canvas edge
+      this.particles.splice(i, 1)
+      this.addParticle()
+      //p.bounce() // made the particle bounce from the canvas edge
 
     }
   }
 };
 var Particle = function(positionVect){
+  this.superiorParticle = false
+  this.calcSuperior = Math.random()
+  if(this.calcSuperior > 0.55 && this.calcSuperior < 0.56) {this.superiorParticle = true}
   this.position = positionVect
-  this.velocity = createVector((Math.random() * 4) - 2, (Math.random() * 4) - 2)
+  this.velocity = createVector((Math.random() * 6) - 3, (Math.random() * 6) - 3)
 };
 Particle.prototype.run = function(){
   this.updatePosition()
